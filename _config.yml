@@ -79,9 +79,9 @@ analytics:
 
 # Site Author
 author:
-  name             : "Gabriel Dávila Revelo"
+  name             : "Gabriel Dávila"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Electronic and Telecommunications Engineer"
+  bio              : "Network Engineering"
   location         : "Buenos Aires, Argentina"
   email            : "gdavila.revelo@gmail.com"
   uri              :
