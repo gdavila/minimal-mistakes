@@ -9,10 +9,10 @@ minimal_mistakes_skin    : "default" # "air", "contrast", "dark", "dirt", "mint"
 
 # Site Settings
 locale                   : "en"
-title                    : "Site Title"
+title                    : "Networking and Data Communications"
 title_separator          : "-"
-name                     : "Telecommunications notes"
-description              : "A profesional blog to share some thoughts on Telecommunications and Networking issues."
+name                     : "Networking and Data Communications"
+description              : "A profesional blog to share some thoughts about networking and Data Communications issues."
 url                      : "https://gdavila.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "gdavila/gdavila.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
@@ -81,7 +81,7 @@ analytics:
 author:
   name             : "Gabriel Dávila"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Network Engineering"
+  bio              : "Engineering and researching"
   location         : "Buenos Aires, Argentina"
   email            : "gdavila.revelo@gmail.com"
   uri              :
