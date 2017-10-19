@@ -14,7 +14,7 @@ title_separator          : "-"
 name                     : "Networking and Data Communications"
 description              : "A profesional blog to share some thoughts about networking and Data Communications issues."
 url                      : "https://gdavila.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
-baseurl                  : # the subpath of your site, e.g. "/blog"
+baseurl                  : ""# the subpath of your site, e.g. "/blog"
 repository               : "gdavila/gdavila.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 # breadcrumbs            : false # true, false (default)
@@ -114,6 +114,9 @@ author:
 include:
   - .htaccess
   - _pages
+  
+include: ["_pages"]
+
 exclude:
   - "*.sublime-project"
   - "*.sublime-workspace"
@@ -175,6 +178,7 @@ sass:
 
 # Outputting
 permalink: /:categories/:title/
+permalink: /about/
 paginate: 5 # amount of posts to show
 paginate_path: /page:num/
 timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -247,3 +251,11 @@ defaults:
       comments: # true
       share: true
       related: true
+
+  # _pages
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
