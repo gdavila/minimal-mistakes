@@ -3,7 +3,7 @@ title: "Entendiendo paris-traceroute"
 output:
   html_notebook: default
 layout: single
-permalink: /PerFlowLoadBalancing
+permalink: /PerFlowLoadBalancing/
 ---
 
 # Campos del datagrama involucrados en balanceo por flujo 
