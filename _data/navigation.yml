@@ -1,4 +1,8 @@
 # main links
 main:
+  - title: "Internet Measurements"
+    url: /internet/
+  - title: "Docsis"
+    url: /docsis/
   - title: "About"
     url: /about/

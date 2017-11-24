@@ -82,7 +82,7 @@ author:
   name             : "Gabriel Dávila"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio              : "Engineering and researching"
-  location         : "Buenos Aires, Argentina"
+  location         : "Buenos Aires"
   email            : "gdavila.revelo@gmail.com"
   uri              :
   bitbucket        :
@@ -234,6 +234,15 @@ compress_html:
   ignore:
     envs: development
 
+collections:
+
+  internet:
+    output: true
+    permalink: /:collection/:path/
+
+  docsis:
+    output: true
+    permalink: /:collection/:path/
 
 # Defaults
 defaults:
@@ -256,3 +265,21 @@ defaults:
     values:
       layout: single
       author_profile: true
+      
+  # _internet
+  - scope:
+      path: ""
+      type: internet
+    values:
+      layout: single
+      author_profile: true
+      
+  # _docsis
+  - scope:
+      path: ""
+      type: docsis
+    values:
+      layout: single
+      author_profile: true
+      
+

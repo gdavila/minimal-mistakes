@@ -1,0 +1,347 @@
+---
+title: Campos del datagrama IP en paris-traceroute
+excerpt: Breve descripción de cómo paris-traceroute modifica los campos del datagrama IP para evitar balanceadores de carga.
+---
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title></title>
+
+<script src="ParisTraceroute_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="ParisTraceroute_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="ParisTraceroute_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="ParisTraceroute_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="ParisTraceroute_files/navigation-1.1/tabsets.js"></script>
+<script src="ParisTraceroute_files/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div id="paris-traceroute" class="section level1">
+<h1>Paris-traceroute</h1>
+<p><a href="https://paris-traceroute.net/">Paris-traceroute</a> es una herramienta de red que permite descubrir el path que siguen los paquetes en una red IP. A diferencia del traceroute tradicional, paris-traceroue garantiza que los paquetes sigan siempre una misma ruta y que eviten así los balanceadores de carga. Detalles sobre estas problemáticas y las ventajas de esta herramienta pueden encontrarse en <a href="https://paris-traceroute.net/publications">la página oficial</a>.</p>
+<p>Actualmente, la misma metodología de paris-traceroure se ha implementado en otras herramientas de mediciones de internet como <a href="https://www.caida.org/tools/measurement/scamper/">Scamper</a> y <a href="http://www.tracebox.org/">traceboox</a>; y en varias plataformas de exploracion de internet como <a href="https://www.measurementlab.net/tests/paris_traceroute/">M-LAB</a> o <a href="http://www.caida.org/projects/ark/">Archipielago</a>.</p>
+<p>El presente post no se centra en el estudio de paris-traceroure en sí, sino que describe en detalle cómo se comportan los distintos campos del datagrama IP en el envío (ida) y en la recepción (retorno) de los mensajes de paris-traceroute.</p>
+</div>
+<div id="balanceo-por-flujo-per-flow-load-balancing" class="section level1">
+<h1>Balanceo por flujo (<em>per flow load balancing</em>)</h1>
+<p>Cuando los paquetes IP atraviesan el internet, estos paquetes pueden recorrer caminos distintos aún cuando la IP origen (<code>IP::src</code>) y la IP destino (<code>IP::dst</code>) sea la misma. Tipicamente esto se debe a:</p>
+<ol style="list-style-type: decimal">
+<li>Balanceo por paquete</li>
+<li>Balanceo por flujo</li>
+</ol>
+<p>El balanceo por paquete se refiere a que los datagramas IP son balanceados en función del orden de llegada al enrutador. Los detalles de este tipo de balanceo no serán tratados por ahora.</p>
+<p>El balanceo por flujo por otro lado, es el balanceo basado en un <em>hash</em> o <em>flow-id</em> calculado en función de ciertos campos que forman el datagrama IP. La <a href="#table1">Tabla-1</a> resume estos campos para los protocolos IP, TCP, UDP e ICMP. Brevemente hablando, si estos campos se mantienen constantes en distintos paquetes, todos los paquetes seguirían el mismo flujo. La tabla muestra adicionalmente los campos que son usados por <em>paris-traceroute</em> como <em>identificador</em>. Este identificador es único en cada paquete y permite diferenciar entre varios mensajes de <em>paris-traceroute</em> originados en el mismo host. Se menciona este campo solamente para tener en cuenta que el <em>identificador</em> es un campo que no se puede mantener constante, por ejemplo:</p>
+<ul>
+<li>Para el caso de UDP los paquetes se identifican mediante el Checksum (<code>UDP::checksum</code>).</li>
+<li>Para el caso de ICMP, mediante Identifier y SeqNumber (<code>ICMP::identifier</code>, <code>ICMP::seqNumber</code>).</li>
+<li>Para el caso de TCP, mediante SeqNumber ( <code>TCP::seqNumber</code>).</li>
+</ul>
+<p><a id="table1"></a></p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Header</th>
+<th align="center">Fields Per-flow load balancing</th>
+<th align="center">Varied by Paris-traceroute</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">IP</td>
+<td align="center"><code>IP::TOS</code>, <code>IP::protocol</code>, <code>IP::src</code>, <code>IP::dst</code></td>
+<td align="center"><em>NA</em></td>
+</tr>
+<tr class="even">
+<td align="center">UDP</td>
+<td align="center"><code>UDP::srcPort</code>, <code>UDP::DstPort</code></td>
+<td align="center"><code>UDP::checksum</code></td>
+</tr>
+<tr class="odd">
+<td align="center">ICMP</td>
+<td align="center"><code>ICMP::Code</code>, <code>ICMP::checksum</code></td>
+<td align="center"><code>ICMP::identifier</code>, <code>ICMP::seqNumber</code></td>
+</tr>
+<tr class="even">
+<td align="center">TCP</td>
+<td align="center"><code>TCP::srcPort</code>, <code>TCP::dstPort</code></td>
+<td align="center"><code>TCP::seqNumber</code></td>
+</tr>
+</tbody>
+</table>
+<p>Tomando como ejemplo un <em>paris-traceroute</em> con datagramas UDP entre un mismo origen-destino, el mensaje de ida mantiedría:</p>
+<ul>
+<li><strong>constantes</strong> los campos: <code>IP::TOS</code>, <code>IP::protocol</code>, <code>IP::src</code>, <code>IP::dst</code>, <code>UDP::srcPort</code>, <code>UDP::DstPort</code></li>
+<li><strong>variable</strong> el campo <code>UDP::checksum</code> que se usa para identificar un paquete de otro.</li>
+</ul>
+<p>En las <a href="#udp">siguiente sección</a> se toma como ejemplo <em>paris-traceroute</em> basado en UDP para explicar en detalle cómo se arman los paquetes manteniendo el <code>UDP::checksum</code> constante y cómo se comportan los mensajes de retorno (<code>ICMP time exceeded</code>) respecto a los balanceadores de flujo.</p>
+<p><a id="udp"></a></p>
+<div id="paris-traceroute-udp" class="section level2">
+<h2>Paris-traceroute UDP</h2>
+<p><a id="udpFowarding"></a></p>
+<div id="mensaje-de-ida-ipsrc---ipdst-udp" class="section level3">
+<h3>Mensaje de ida: IPsrc -&gt; IPdst (UDP)</h3>
+<p>La sonda UDP basada en <em>paris-traceroute</em> altera el Checksum para usarlo como identificación de los paquetes enviados. A su vez, el checksum está en función de varios campos del datagrama IP y UDP, teniendo:</p>
+<pre>
+UDP::chesksum = f (
+                   IP::src, IP::dst, IP::reserved, IP::protocol, 
+                   UDP::src, UDP::dst, UDP::length, <span style="color:red">UDP::data </span> 
+                        )
+</pre>
+<p>Donde <code>f()</code> representa la función que permite el calculo del chekcsum. Se recuerda que el cheksum se computa sumando los campos del datagrama involucrados, en palabras de 16 bits y obteniendo el complento a uno del resultado final.</p>
+<p>Analizando los campos involucrados en el checksum (<code>UDP::checksum</code>), se tiene que el único campo que no es constante es el payload (<code>UDP::data</code>), pues los demas campos se mantienen constantes para mantener el mismo <em>flow-id</em>.</p>
+<p>Es decir, <code>UDP::data</code> es el único campo disponible para manipular el resultado del checksum resultante. En la práctica, lo que ocurre es que se añade un <em>tag</em> al campo <code>UDP::data</code> que posteriormente se refleja en el <code>UDP::checksum</code> y que sirve como identificador para <em>paris-traceroute</em>. Este <em>tag</em> se copia en los dos primeros bits de <code>UDP::data</code> y coincide con el valor que se asigne a <code>IP::Identification</code>.</p>
+<p><strong>Nota:</strong> El funcionamiento descrito se comprobó en <em>paris-traceroute ver. 0.9-dev</em>.</p>
+</div>
+<div id="mensaje-de-retorno-iphop---ipsrc-icmptimeexceeded" class="section level3">
+<h3>Mensaje de retorno: IPhop -&gt; IPsrc (icmpTimeExceeded)</h3>
+<p>El mensaje <em>paris-traceroute</em> UDP enviado desde el origen revela los hops IP que se encuentren en el path hasta llegar s su destino. En la anterior sección se explicó cómo el mensaje <em>paris-traceroute</em> de ida mantiene constantes <code>UDP::src</code>, <code>UDP::dst</code>, <code>UDP::length</code> y varía los campos <span style="color:red"> <code>UDP::data</code></span> y <span style="color:red"> <code>UDP::checksum</code></span>. Esto asegura que los paquetes de ida pertenezcan a un mismo flujo (mismo <em>flow-id</em>). Sin embargo, esta condición no es suficiente para asegurar que los mensajes <code>ICMP time exceeded</code> en respuesta al <em>paris-traceroute</em> también sigan un único flujo. A continuación se hace un repaso para entender mejor qué pasa con los datagramas de retorno.</p>
+<p>Según los autores de <em>paris-traceroute</em> y analizando la <a href="#table1">Tabla-1</a>, para que varios mensaje <code>ICMP time exceeded</code> (originados en un mismo hop) pertenezcan a un mismo flujo, los distintos mensajes deben mantener constante los siguientes campos. :</p>
+<ul>
+<li><span style="color:green"> <code>ICMP::code</code></span></li>
+<li><span style="color:green"> <code>ICMP::checksum</code> </span></li>
+</ul>
+<p><a id="icmp"></a></p>
+<pre>
+                       ICMP Time Exceeded Message
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     Type=11   |<span style="color:green">    Code=0</span>     |     <span style="color:green">     Checksum(*)</span>          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                             unused                            |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |      IP::header(*)+ 64/128 bits of Original Data Datagram(*)  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+   (*) Varían de mensaje a mensaje en paris-traceroute
+   
+</pre>
+<p>En práctica, el campo <code>ICMP::code</code> del mensaje respuesta se mantiene constante (ver <a href="#icmp">ICMP Time Exceeded Message</a>). Por otro lado, para que el campo <code>ICMP::checksum</code> del mensaje de retorno <strong>también se matenga constante</strong>, se deben cumplir algunas consideraciones adicionales.</p>
+<p>Por ejemplo, se sabe que el <code>ICMP::checksum</code> está en función de:</p>
+<pre>
+ICMP::checksum = f (ICMP::type , ICMP::code , <span style="color:blue">ICMP::payload</span>)
+</pre>
+<p>A su vez, se sabe que el mensaje <code>ICMP time exceeded</code> incluye como payload el encabezado IP del datagrama original más los primeros 64 bits del encabezado UDP:</p>
+<pre>
+<span style="color:blue"> ICMP::payload </span>= IP::header + UDP::header 
+</pre>
+<p>Considerando esto, el <code>ICMP::checksum</code> podría manterse constante si tomamos en cuenta una de las propiedades del computo del checksum: <strong>si se suma un checksum ya computado a los valores que se usaron para calcularlo, el resultado es siempre <code>0xFFFF</code></strong>. Esta condición se cumple parcialmente entre los campos que conforman el <span style="color:blue"><code>ICMP::payload</code> </span>del mensaje de retorno, es decir:</p>
+<ul>
+<li>La sumatoria de todos los campos correspondientes al encabezado IP (ver <a href="#ipheader">IP Header</a>) del datagrama original (incluyendo el <code>IP::checksum</code>) es siempre <strong>0xFFFF</strong></li>
+</ul>
+<p><a id="ipheader"></a></p>
+<pre>
+                        Internet Datagram Header
+   0       4       8               16                             32                     
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |Version|  IHL  |Type of Service|          Total Length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |        Identification (*)     |Flags|      Fragment Offset    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Time to Live |    Protocol   |         Header Checksum (*)   |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Source Address                          |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    Destination Address                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                    Options                    |    Padding    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   
+   (*) Campos que varian de mensaje a mensaje de paris-traceroute
+   [1] Aunque los campos Identification y Cheksum varien, la sumatoria de
+       todo el encabezado es siempre 0xFFFF
+
+</pre>
+<ul>
+<li>La sumatoria de los primeros 48 bits del encabezado UDP es también una constante (ver <a href="#udpheader">UDP Header</a>), ya que para mantener el <em>flow-id</em> de ida constante la mayoría de campos del <code>UDP::header</code> no varían (<code>UDP::src</code>,<code>UDP::dst</code>, <code>UDP::length</code>) . Entonces, considerando que sumamos todos los campos del <code>UDP::header</code> se tendría que:</li>
+</ul>
+<p><span style="color:green"><code>UDP::src</code></span> + <span style="color:green"><code>UDP::dst</code></span> + <span style="color:green"><code>UDP::len</code></span> + <code>UDP::cheksum</code> +<code>UDP::data</code> = <span style="color:green"> <span class="math inline">\(k_1\)</span></span>+ <code>UDP::cheksum* +UDP::data</code></p>
+<p><a id="udpheader"></a></p>
+<pre>
+
+                        UDP datagram Header + Data
+                0                 16                 32  
+                 +--------+--------+--------+--------+
+                 |     Source      |   Destination   |
+                 |      Port       |      Port       |
+                 +--------+--------+--------+--------+
+                 |                 |                 |
+                 |     Length      |  Checksum (*)   |
+                 +--------+--------+--------+--------+
+                 |                                   |
+                 |                Data  (*)          |
+                 |                                   |
+                 +--------+--------+--------+--------+   
+                 
+  (*) Campos que varian de mensaje a mensaje de paris-traceroute
+ 
+</pre>
+<ul>
+<li>La constante <span style="color:green"> <span class="math inline">\(k_1\)</span></span> representa la sumatoria de los valores que <em>paris-traceroute</em> mantiene constantes dado un mismo origen y destino.</li>
+<li>El (i) campo <code>UDP::cheksum</code> por otro lado, varia de mensaje en mensaje ya que es usado como identificador, pero dado que este a su vez es dependiente unicamente del valor del (ii) campo <code>UDP::data</code>, la suma de estos dos (2) valores también se resume a una constante <span style="color:green"> <span class="math inline">\(k_2\)</span></span> = <code>UDP::cheksum +UDP::data</code>. En este caso, <span style="color:green"> <span class="math inline">\(k_2\)</span></span> no se reduce a <strong>0xFFFF</strong> como en el caso del encabezado IP, porque los sumandos disponibles no son todos los campos usados para el calculo del <code>UDP::cheksum</code>. Sin embargo, los campos faltantes son siempre constantes (<code>IP::src</code>, <code>IP::dst</code>, <code>IP::protocol</code>, <code>UDP length</code>), de modo que si el <code>ICMP::payload</code> incluye el único dato que varía (<code>UDP::data</code>), la suma de estos dos valores se reduce siempre a una misma constante <span style="color:green"> <span class="math inline">\(k_2\)</span></span>, resultando:</li>
+</ul>
+<p>(<code>UDP::src</code>+<code>UDP::dst</code>+<code>UDP::len</code>) + (<code>UDP::cheksum</code> + <code>UDP::data</code>) = <span style="color:green"> <span class="math inline">\(k_1\)</span></span> + <span style="color:green"> <span class="math inline">\(k_2\)</span></span> = <span class="math inline">\(k\)</span></p>
+<p>De este modo el <code>ICMP::checksum</code> se calcularía siempre sobre la misma sumatoria <span class="math inline">\(k\)</span>, asegurando en este sentido, que se mantiene constante y que por tanto todos los paquetes <code>ICMP time exceeded</code> pertenecen al mismo <em>flow-id</em>. <strong>Notar que para que esto se cumpla, es necesario que el mensaje ICMP incluya en su payload el <code>UDP::header</code>, ya que sin este valor, el <code>UDP::cheksum</code> no tiene el sumando necesario para que estos dos valores se reduzcan a la constante <span class="math inline">\(k_2\)</span>.</strong></p>
+<p>La excepción para que los mensajes ICMP time exceeded de un mismo hop no pertenezcan aun mismo <em>flow-id</em> (Es decir, tengan valores de <code>ICMP::cheksum</code> distintos) es cuando el <code>UDP::payload</code> no se incluye en la respuesta ICMP. Esto sucede cuando los equipos de red solamente añaden los primeros 64 bits del <code>IP::payload</code> del datagrama original (<a href="https://tools.ietf.org/html/rfc792">RFC792</a>) pero no soportan la <a href="https://tools.ietf.org/html/rfc4884">RFC4884</a>. Es decir, la implementación de la <a href="https://tools.ietf.org/html/rfc4884">RFC4884</a> es un requisito indispensable para asegurar que todos los mensajes de retorno siguen un mismo flujo.</p>
+</div>
+</div>
+<div id="tcp-paris-traceroute" class="section level2">
+<h2>TCP Paris-traceroute</h2>
+<p>El funcionamiento es completamente análogo al caso UDP. En el caso de TCP se usa <code>TCP::seqNumber</code> como identificador, al cual se lo manipula mediante <code>TCP::data</code>. Para que los mensajes de retorno sigan un mismo flujo se debe implementar también la <a href="https://tools.ietf.org/html/rfc4884">RFC4884</a></p>
+</div>
+<div id="icmp-paris-traceroute" class="section level2">
+<h2>ICMP Paris-traceroute</h2>
+<p>Este caso es distinto a los anteriores en cuanto a la implementación, pero produce los mismos resultados. En el caso de ICMP se usa <code>ICMP::identifier</code> e <code>ICMP::seqNumber</code> como identificador. Y se usa el campo <code>ICMP::data</code> para producir siempre un mismo valor en el <code>ICMP::checksum</code> y asegurar el mismo <em>flow-id</em> en los mensajes de ida.</p>
+<p>En el paquete de retorno, el campo <code>ICMP::data</code> es necesario para que la sumataria involucrada en el calculo del checksum del paquete de retorno sea siempre una constante. De modo que para que los mensajes de retorno sigan un mismo flujo se debe implementar también la <a href="https://tools.ietf.org/html/rfc4884">RFC4884</a>.</p>
+<pre>
+                      Echo or Echo Reply Message
+                      
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     Type      |     Code      |          Checksum             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           Identifier (*)      |        Sequence Number(*)     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     Data ...
+   +-+-+-+-+-
+ 
+  (*) Campos que varian en cada paquete de ida de paris-traceroute
+  
+</pre>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

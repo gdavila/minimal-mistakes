@@ -1,0 +1,257 @@
+---
+output: 
+  html_document: 
+    self_contained: no
+---
+
+# Resumen
+Aquí se analiza brevemente el impacto de  *Partial Service* y el CER en un par de escenarios Docsis 3.0 con channel bonding. Esta discusión surge de detectar problemas de navegación en los CM dosis 3.0 cuando estos están en *Partial Service*, lo que a priori sonaba extraño. En la práctica, lo que se encuentra es que *Partial Service* es un estado *inestable* - en el sentido de que un CM normalmente entra y sale de *Partial Service* continuamente por la naturaleza de la interferencia- esta *inestabilidad* hace que las portadoras con problemas se sigan usando entre el CMTS y el CM, degradando el throughput TCP. En este post se muestra brevemente el comportamiento de  *Partial Service* y los valores de CER que impactan el rendimiento de las conexiones TCP.
+
+
+# Introducción
+
+Con la implementación de *channel bonding* introducida por DOCSIS 3.0, se introduce también el *feature partial service* (PS) mediante el cual un cable modem (CM) 3.0 operando en *channel bonding* muestra una robustez tal, que puede traficar datos con normalidad incluso cuando una o varias de sus portadoras estan *offline* o con problemas de ruido (SNR, CER, etc). 
+
+En la práctica, *partial service* no soluciona todos los problemas del canal. De hecho, normalmente se requiere que los CMTS sean configurados adecuadamente para que *partial service* funcione de forma óptima (la flexibliad de esta optimización varía de proveedor en proveedor).  Y si bien *partial service* podría absorver gran parte de los problemas de ruido en un CM, dificilmente las configuraciones por defecto de los CMTS están listas para que este feature funcione eficientemente, de forma que el ruido (y el CER que este causa) continua siendo un problema que debe considerarse no solo en upstream, sino también en downstream. Esto es lo que muestra el resto de este breve reporte. De hecho, en las siguientes pruebas se analiza el impacto del CER en Downstream sobre cable modems 3.0 que no entran en Partial Service (ya sea por CMTS sin la configuración adecuada o por las características propias del ruido).  Lo que se encuentra es que el CER produce lentitud en el servicio de datos. 
+
+Los resultados son los que la teoría predice. En efecto, teoricamente el CER ocasiona perdida de paquetes IP ${p}$, lo que está directamente relacionado al throughput TCP/IP [[Mathis et al., 1997]](https://dl.acm.org/citation.cfm?id=264023):
+$$Throughput_{TCP}=\frac{MSS}{RTT}*\frac{1}{\sqrt{p}}$$
+
+
+# Dataset
+
+Las siguientes pruebas se llevan a cabo sobre dos modelos de CM 3.0 sobre los cuales se inserta ruido de forma controlada.
+
+# Metodología
+
+Se evalua el impacto del ruido en los dos CM 3.0 con  *service group* de 20 y 8 portadoras en downstream respectivamente. A este *service group* se le suma ruido de forma controlada  en las frecuencias de 771 MHz y 777 MHz, intentando simular una interferencia causada por LTE. Con este escenario se evalua el throughput TCP mediante la descarda de archivos usando el [portal de pruebas de servicio de Cablevision](http://sps.fibertel.com.ar/). Los CMs poseen un ancho de banda habilitado de 50 Mbps.
+
+# Resultados
+
+## Throughput y SNR
+
+El throughput del CM disminuye cuando el SNR de la portadora con interferencia se encuentra entre 25 dB y 27 dB. Cuando el SNR se encuentra por abajo de este umbral, el CM entra en *partial service*, lo que se traduce en que las portadoras con problemas dejan de usarse y el throughput del CM  vuelve a la normalidad (alrededor de 50 Mbps). Este mismo escenario se observa interfiriendo una o dos portadoras (ver Fig 1 y Fig2).
+
+Para ser más exactos con este comportamiento, se observa  que más que el SNR, lo que produce que las portadoras entren en *partial service* es el valor del CER. Si $CER<10\%$ el CM dificilmente  entra en *partial-service* ( o entra y sale constantemente). 
+
+La Fig. 1 y 2 muestran como evolucionó el throughput TCP del CM a lo largo del experimento para distintos valores de SNR en la portadora 771 y 777 MHz. En la Fig. 1, a partir del tiempo 4500(s) el throughput TCP se recupera debido a que las portadoras con interferencia tienen tan bajo SNR que entran en *partial-service*. En la Fig. 2 ocurre lo mismo entre el tiempo 1000(s) y 1600(s)
+
+
+```{r interferencia1CH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, fig.cap="Fig1"}
+#Loading Data
+
+library(ggplot2)
+#library(ggpubr)
+library(gridExtra)
+
+#Loading Data
+DatasetA<-read.csv(file="https://raw.githubusercontent.com/gdavila/gdavila.github.io/master/raw/PartialServTCP/CM3848VE_CHannels.csv",
+                    sep=",", header=TRUE )
+
+
+DatasetB<-read.csv(file="https://raw.githubusercontent.com/gdavila/gdavila.github.io/master/raw/PartialServTCP/CM3848VE_2CH_CHannels.csv",
+                   sep=",", header=TRUE )
+
+DatasetC<-read.csv(file="https://raw.githubusercontent.com/gdavila/gdavila.github.io/master/raw/PartialServTCP/CMSVG6582_CHannels.csv",
+                   sep=",", header=TRUE )
+
+#Plot throughput vs time 1CH
+c1="grey"
+
+ggplot(data=DatasetA, aes(y=bandwidth_Mbps, x=timestampID-min(timestampID)) )+
+  geom_line(aes(color="Throughput"), size=0.7)+
+  geom_point(aes(y=snr*1.5,color=as.factor(freq)), size=1)+
+  scale_y_continuous(name="Throughput (Mbps)", sec.axis = sec_axis(~./1.5, name = "SNR (dB)"))+
+  scale_x_continuous(name="tiempo (s)")+
+  scale_colour_manual(values=c("603"=c1, "609"=c1, "615"=c1,
+                               "621"=c1, "627"=c1, "633"=c1,
+                               "639"=c1, "645"=c1, "759"=c1,
+                               "765"=c1, "771"="dodgerblue", "777"=c1,
+                               "783"=c1, "789"=c1, "795"=c1,
+                               "801"=c1, "807"=c1, "813"=c1,
+                               "819"=c1, "825"=c1, "Throughput"="springgreen3"),
+                      breaks=c("Throughput", "771", "603"),
+                      labels=c("Throughput", "SNR 771MHz", "SNR Resto de Portadoras") )+
+  labs(color = " ", tittle= "Throughput vs SNR", subtitle= "Channel Bonding 20 CH, 1CH con interferencia")+
+  theme(legend.position="bottom")
+
+```
+
+```{r interferencia2CH, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE, fig.cap="Fig2"}
+
+#Plot throughput vs time 2CH
+
+
+ggplot(data=DatasetB, aes(y=bandwidth_Mbps, x=timestampID-min(timestampID)))+
+  geom_line(aes(color="Throughput"), size=0.7)+
+  geom_point(aes(y=snr*1.5, color=as.factor(freq)), size=1)+
+  scale_y_continuous(name="Throughput (Mbps)", sec.axis = sec_axis(~./1.5, name = "SNR (dB)"))+
+  scale_x_continuous(name="tiempo (s)")+
+  scale_colour_manual(values=c("603"=c1, "609"=c1, "615"=c1,
+                               "621"=c1, "627"=c1, "633"=c1,
+                               "639"=c1, "645"=c1, "759"=c1,
+                               "765"=c1, "771"="dodgerblue", "777"="red1",
+                               "783"=c1, "789"=c1, "795"=c1,
+                               "801"=c1, "807"=c1, "813"=c1,
+                               "819"=c1, "825"=c1, "Throughput"="springgreen3"),
+                      breaks=c("Throughput", "771", "777", "603"),
+                      labels=c("Throughput", "SNR 771MHz ", "SNR 777MHz","SNR Resto de Portadoras"))+
+  labs(color = " ", tittle= "Throughput vs SNR", subtitle= "Channel Bonding 20 CH, 2CH con interferencia")+
+  theme(legend.position="bottom")
+
+
+```
+
+
+## Throughput y CER/CCER
+
+El CER de la portadora interferida (a pesar de que existen otras portadoras en estado óptimo $SNR>35 dB$) produce limitaciones importantes en el throughput de TCP, principlamente cuando $CER < 10\%$ (para valores de $CER>10\%$ el throughput se recupera debido a que la portadora entra en *partial service*). La siguientes figuras muestran como el throughput decrece cuando el CER aumenta. El eje *x* está en escala logarítmica para resaltar que la caida del throughput es bastante  rapida y abrupta  para pequeños incremetos de CER. A su vez, los resultados muestran que el Throughput depende no solo del CER y sino también de la cantidad de canales en *channel bonding*, por ejemplo:
+
+1. **Channel Bonding 20 CH:** para un $CER=0.1\%$ el throughput alcanzado baja a 15 Mbps, y para un $CER=1\%$  el throughput baja a 6 Mbps.
+
+2. **Channel Bonding 8 CH: ** para un $CER=0.01\%$ el throughput alcanzado baja a 25 Mbps, $CER=0.1\%$ el throughput decrece a 10 Mbps, y para un $CER=1\%$  el throughput baja a 3 Mbps.
+
+En ambos casos, para $CER>10\%$ el throughput se recupera debido a que el CM entra en *partial service*.
+
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+#plot throughput vs cer
+
+
+exclusion_time<-subset(DatasetA, freq!=771 & cer>0 & ccer>0)$timestampID
+toydataA<- subset(DatasetA, freq==771 & cer<=100 & ccer<=100 & ! (timestampID %in% exclusion_time) )
+
+p1 <- ggplot(data=toydataA, aes(y=bandwidth_Mbps,x=cer ))+
+  geom_point() +
+  geom_hline(yintercept = 50, color="red", size=1)+
+  geom_smooth(method="loess")+
+  scale_x_log10(name= "CER(%)", breaks=c(0.01, 0.03, 0.1, 0.3,1,3,10))+
+  scale_y_continuous(name="Mbps",limits=c(0,60))+
+  labs(tittle= "Throughput vs CER", subtitle= "Channel Bonding 20 CH, 1CH con interferencia \nResultados Laboratorio")
+
+exclusion_time<-subset(DatasetC, freq!=771 & cer>0 & ccer>0)$timestampID
+toydataC<- subset(DatasetC, freq==771 & cer<=100 & ccer<=100 & ! (timestampID %in% exclusion_time) )
+
+p2 <- ggplot(data=toydataC, aes(y=bandwidth_Mbps,x=cer ))+
+  geom_point() +
+  geom_hline(yintercept = 50, color="red", size=1)+
+  geom_smooth(method="loess")+
+  scale_x_log10(name= "CER(%)", breaks=c(0.01, 0.03, 0.1, 0.3,1,3,10))+
+  scale_y_continuous(name="Mbps",limits=c(0,60))+
+  labs(tittle= "Throughput vs CER", subtitle= "Channel Bonding 8 CH, 1CH con interferencia \nResultados Laboratorio")
+
+grid.arrange(p1,p2, top = "Throughput vs CER", nrow=1, ncol=2)
+
+```
+
+Además, el incremento de CER está relacionado directamente con el incremento de CCER. La relación entre estas variables (CER vs CCER) se muestra en la siguiente figura y pueden ayudar a refinar los umbrales de CER/CCER a los que se debe prestar atención. En verde se marcan las combinaciones de CER/CCER que aun permiten alcanzar servicios relativamente cercanos a los 50 Mbps.
+
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+
+#plot cer vs ccer | Bandwidth
+ggplot(data=toydataA, aes(x=ccer, y=cer, color=bandwidth_Mbps))+
+  geom_point(size=4, alpha=0.5)+
+  scale_x_continuous(name="CCER(%)", breaks=c(1,10,20,40,60,80,100))+
+  scale_colour_gradient(low = "firebrick1",high = "green1")+
+  scale_y_log10(name="CER(%)",breaks=c(0.01,0.03, 0.1,0.3,1,3,10))+
+  labs(color="Throughput (Mbps)", subtitle = 'Resultados para bonding 20CH')
+```
+
+Las figuras analizadas en esta sección permiten concluir que el impacto del CER en el Throughput depende también del número de canales en el *channel bonding*. En efecto, esto tiene sentido considerando que mientras más canales formen el *bonding group*, mayor probabilidad tienen los paquetes de evitar los canales con ruido.
+
+# Discusiones 
+
+Los resultados arrojan que el CER impacta directamente en el throughput TCP y limita de throughput que el cliente puede alcanzar. Esto a su vez motiva a la definición de umbrales de CER para alcanzar los servicios/productos que se ofrezcan al cliente. En este aspecto se presentan varias problemáticas (o perspectivas):
+
+1. **Establecer un único umbral de CER/CCER para todos los clientes:** Esta perspectiva puede resultar simple en implementación pero imprecisa para la detección de inconvenientes: no todos los servicios se verán afectados en la misma medida por el CER  (i. e., productos de 12 Mbps, 24 Mbps, 50 Mbps, 100 Mbps). En efecto, los servicios más afectados son los que exigen un elevado Throughput. De este modo, la unificación de los umbrales o alarmas de CER y CCER para todos los servicios puede causar que los problemas se subestimen o se sobreestimen.  
+
+2. **Establecer distintos umbrales de CER/CCER de acuerdo al tipo de Servicio:** Este enfoque añade complejidad a la implementación pero resulta en un diagnóstico más preciso de los inconvenientes del cliente.En este sentido, cada producto, tendrá asociado un umbral de CER/CCER que generaría una alarma,
+
+Una solución alternativa es evaluar un **único umbral normalizado** o un **grupo de umbrales** de CER/CCER coniderando la demanda de tráfico actual y a mediano plazo. En este sentido se debería definir el Throughput mínimo que se desea garantizar para todos los usuarios y garantizar un CER/CCER mínimo que satisfaga dicha demanda.
+
+Desde el punto de vista técnico, otra variable a considerar para definir el umblar del CER/CCER en Downstream es la cantidad de portadoras del *channel bonding*: a mayor portadoras en *bonding*, más robusto es el servicio que percibe el cliente. En efecto, la relación del Throughput en función del CER y del número de canales en *bonding* ( $n_{CH}$) está dada por:
+
+$$ Throughput_{TCP}=\frac{MSS}{RTT}*\frac{1}{\sqrt{p}}$$
+Donde el valor de $p$ (paket loss) se reduce en proporción al número de portadoras $n_{CH}$ en *channel bonding*:
+
+$$ p \approx CER * \frac{IP_{size}}{codeword_{size}}* \frac {1}{n_{CH}}  \approx \frac{7}{n_{CH}} *CER $$
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+######################
+######################
+#Throughpu teorico
+
+library(emdbook)
+
+CER<-lseq(0.00001, 0.1, 1000)
+N<-8
+p<-7*CER/N
+
+MSS<-1460*8
+RTT_mean<-27.5/1000
+RTT_min<- 9/1000
+RTT_std<- 26/1000
+
+mysamp <- function(n, m, s, lwr, upr, nnorm) {
+  samp <- rnorm(nnorm, m, s)
+  samp <- samp[samp >= lwr & samp <= upr]
+  if (length(samp) >= n) {
+    return(sample(samp, n))
+  }  
+  stop(simpleError("Not enough values to sample from. Try increasing nnorm."))
+}
+
+set.seed(42)
+
+RTT<-mysamp(n=length(p),  m= RTT_mean, s = RTT_std , lwr = RTT_min, upr= 200, nnorm=100*length(p) )
+
+AB1<-(MSS/RTT)*(1/sqrt(p))
+AB1<-AB1/(1000*1000)
+
+N<-24
+p<-7*CER/N
+
+RTT<-mysamp(n=length(p),  m= RTT_mean, s = RTT_std , lwr = RTT_min, upr= 200, nnorm=100*length(p) )
+
+AB2<-(MSS/RTT)*(1/sqrt(p))
+AB2<-AB2/(1000*1000)
+
+
+qplot()+ geom_point(aes(CER*100, AB1, color='8 Channels'), alpha=0.3)+geom_smooth(aes(CER*100, AB1), color='blue')+
+  geom_point(aes(CER*100, AB2,color='24 Channels'), alpha=0.3)+geom_smooth(aes(CER*100, AB2), color='red')+
+  scale_x_log10(name='CER(%)',labels=scales::comma,breaks=c(0.001, 0.003, 0.01, 0.03, 0.1, 0.3,1,3,10))+
+  scale_y_continuous(name= 'Throughput (Mbps)', limits=c(0,120),breaks=c(3, 20, 40, 60,80,100,120))+
+  scale_color_manual(values=c('24 Channels'='red', '8 Channels'= 'blue'))+
+  labs(color='Channel Bonding',subtitle= "Throughput vs CER (1CH interferido) - Estimación Teórica \n MSS=1460Bytes, meanRTT=27.5ms, stdRTT std=26.5ms, minRTT=9ms")
+
+```
+
+Los valores experimentales obtenidos en estas pruebas se aproximan a la curva teórica (Fig. Superior). En este sentido, se pueden usar estos valores para establecer los umbrales para definir un CER que garantice el throughput acorde a cada producto (es decir, CER máximo que garantizaría que se entregue al cliente el producto ofertado). Estos valores se resumen en la siguiente tabla:
+
+
+```{r echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
+n<-8
+RTT<-27.5
+MSS<-1460
+TCP<-c(6,12,24,50,100)
+cer1<-(64/7)*n*(MSS/(RTT*TCP*1000))^2
+cer1<-round(cer1*100,3)
+n<-16
+cer2<-(64/7)*n*(MSS/(RTT*TCP*1000))^2
+cer2<-round(cer2*100,3)
+n<-24
+cer3<-(64/7)*n*(MSS/(RTT*TCP*1000))^2
+cer3<-round(cer3*100,3)
+tbl<-data.frame(TCP, cer1, cer2, cer3)
+names(tbl) <- c('Throughput Máximo (Mbps)',"8 CH bonding - CER(%)", "16 CH bonding -  CER(%)","24 CH bonding -  CER(%)" )
+library(knitr)
+kable(tbl, caption = "**Valores máximos de CER (teóricos) y throughput para distintas configuraciones de channel bonding**")
+```
+  
+
+# Conclusiones 
+
+1. El impacto de tener una portadora operativa con CER es elevado. Se encuentra que el throughput TCP se ve afectado severamente. Asímismo se encuentra que dado que el CER establece el throughput máximo de los clientes, quienes se ven mas afectados son los que tienen los productos con más ancho de banda contratado.
+
+2. El CER se vuelve menos crítico a media que el *channel bonding* aumenta. Así, el throughput TCP en un CM con 24 canales en *channel bonding* es menos sensible al CER, que en un CM con 8 canales.
+
