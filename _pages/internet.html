@@ -5,6 +5,7 @@ permalink: /internet/
 author_profile: false
 ---
 
-{% for post in site.internet %}
+{% assign sorted = (site.internet | sort: 'date') | reverse %}
+{% for post in sorted%}
   {% include archive-single.html %}
 {% endfor %}

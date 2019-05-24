@@ -240,7 +240,7 @@ collections:
     output: true
     permalink: /:collection/:path/
 
-  docsis:
+  broadcast:
     output: true
     permalink: /:collection/:path/
 
@@ -265,7 +265,7 @@ defaults:
     values:
       layout: single
       author_profile: true
-      
+
   # _internet
   - scope:
       path: ""
@@ -273,13 +273,11 @@ defaults:
     values:
       layout: single
       author_profile: true
-      
-  # _docsis
+
+  # broadcast
   - scope:
       path: ""
-      type: docsis
+      type: broadcast
     values:
       layout: single
       author_profile: true
-      
-

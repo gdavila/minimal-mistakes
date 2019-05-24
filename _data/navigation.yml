@@ -2,7 +2,7 @@
 main:
   - title: "Internet Measurements"
     url: /internet/
-  - title: "Docsis"
-    url: /docsis/
+  - title: "Video & Broadcast"
+    url: /broadcast/
   - title: "About"
     url: /about/
