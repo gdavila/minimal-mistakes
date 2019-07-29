@@ -187,6 +187,7 @@ $(document).ready(function () {
 <h3>Mensaje de ida: IPsrc -&gt; IPdst (UDP)</h3>
 <p>La sonda UDP basada en <em>paris-traceroute</em> altera el Checksum para usarlo como identificación de los paquetes enviados. A su vez, el checksum está en función de varios campos del datagrama IP y UDP, teniendo:</p>
 <pre>
+
 UDP::chesksum = f (
                    IP::src, IP::dst, IP::reserved, IP::protocol, 
                    UDP::src, UDP::dst, UDP::length, <span style="color:red">UDP::data </span> 

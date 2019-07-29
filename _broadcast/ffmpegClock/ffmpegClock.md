@@ -32,16 +32,16 @@ La mayor parte de este contenido fue originalmente expuesto por [Gyan](https://s
 2\.  Ejecutar el siguiente codigo en el host que hará el stream: 
 
 
-
-	ffmpeg -re -f lavfi -i color=black:640x480:rate=ntsc,format=yuv420p -g 6 -r ntsc \
-	-vf "settb=AVTB,setpts='trunc(PTS/1K)*1K+st(1,trunc(RTCTIME/1K))-1K*trunc(ld(1)/1K)'\
-	,drawbox=y=ih/PHI:color=black@0.4:width=iw:height=48:t=fill,\
-	drawtext=text='%{localtime}.%{eif\:1M*t-1K*trunc(t*1K)\:d}:fontfile='/usr/share/fonts/truetype/ \
-	dejavu/DejaVuSans.ttf':fontsize=40:fontcolor=white:x=(w-tw)/2:y=240'" \
-	-b:v 5M -minrate:v 5M -maxrate:v 5M -bufsize:v 1M -preset ultrafast \
-	-vcodec libx264  -r ntsc -tune zerolatency  -muxrate 8M  \
-	-pcr_period 40 -f mpegts udp://@239.123.123.1:50000?pkt_size=1316 
-
+```
+ffmpeg -re -f lavfi -i color=black:640x480:rate=ntsc,format=yuv420p -g 6 -r ntsc \
+-vf "settb=AVTB,setpts='trunc(PTS/1K)*1K+st(1,trunc(RTCTIME/1K))-1K*trunc(ld(1)/1K)'\
+,drawbox=y=ih/PHI:color=black@0.4:width=iw:height=48:t=fill,\
+drawtext=text='%{localtime}.%{eif\:1M*t-1K*trunc(t*1K)\:d}:fontfile='/usr/share/fonts/truetype/ \
+dejavu/DejaVuSans.ttf':fontsize=40:fontcolor=white:x=(w-tw)/2:y=240'" \
+-b:v 5M -minrate:v 5M -maxrate:v 5M -bufsize:v 1M -preset ultrafast \
+-vcodec libx264  -r ntsc -tune zerolatency  -muxrate 8M  \
+-pcr_period 40 -f mpegts udp://@239.123.123.1:50000?pkt_size=1316 
+```
 
 	
 - La primera linea de código llama a `ffmpeg` tomando como formato un video sintético usando la librería lavfi (`-f lavfi`) y manteniendo el frame rate del input (`re`). Este video usa como background un lienzo negro de 640x480 a 30 fps en formato de color YUV 4:2;0 (`color=black:640x480:rate=ntsc,format=yuv420p`). La salida del video codificado tendrá un GOP de 6 y un frame rate de 30 fps (`-g 6 -r ntsc ` ).
@@ -56,11 +56,9 @@ La mayor parte de este contenido fue originalmente expuesto por [Gyan](https://s
 	
 3\. Reproducir el sream. Para hacer una prueba del stream previamente definido, se puede reproducir el video en el mismo host que hace el stream usando fflpay
 
-
-
-	ffplay -i  udp://239.123.123.1:50000 -fflags nobuffer
-
-
+```
+ffplay -i  udp://239.123.123.1:50000 -fflags nobuffer
+```
 # Resultados
 - El resultado del video con el wallclock debería ser:
 

@@ -74,13 +74,14 @@
     border-bottom: 1px solid $border-color;
   }
 
-  p, li, dl, p {
+  p, li, dl{
     font-size: 0.75em;
   }
-    
-  li > p {
-    font-size: 1em;
+
+  pre{
+    font-size: 0.7em;
   }
+
 
   /* paragraph indents */
   p {

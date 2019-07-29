@@ -6,7 +6,7 @@
 # `jekyll serve`. If you change this file, please restart the server process.
 
 minimal_mistakes_skin    : "default" # "air", "contrast", "dark", "dirt", "mint", "sunrise"
-remote_theme             : "mmistakes/minimal-mistakes@4.16.5"
+remote_theme             : "mmistakes/minimal-mistakes"
 # Site Settings
 locale                   : "en"
 title                    : "Networking and Data Communications"
@@ -166,9 +166,6 @@ kramdown:
   toc_levels: 1..6
   smart_quotes: lsquo,rsquo,ldquo,rdquo
   enable_coderay: false
-  syntax_highlighter_opts:
-    block:
-      line_numbers: true
 
 
 # Sass/SCSS
