@@ -14,8 +14,7 @@ Los temas de interés principales de este sitio son:
 
 *  Internet: `Topología del Internet` y `Mediciones domiciliarias de QoS`. Estos temas son un resumen de varias ideas que surgen de mi colaboración grupo de Redes Complejas y Comunicación de Datos [CoNexDat](http://cnet.fi.uba.ar/) de la UBA.
 
-* Media y Video Broadcast: (i) Medición de QoS/QoE en `Docsis 3.0`, `Docsis 3.1` y en servicios de video `IPTV` y `ABR`. (ii) Arquitecturas y paradigmas de broadcast, como *Low Latency ABR* y *content aware encoding*. Acá se comparte datos útiles sobre el estado de arte de la tecnología y casos de uso de herramientas open source.
-
+* Media y Video Broadcast: (i) Medición de QoS/QoE en `Docsis 3.0`, `Docsis 3.1` y en servicios de video `IPTV` y `ABR`. (ii) Arquitecturas y paradigmas de broadcast, como *Low Latency ABR* y *content aware encoding*. 
 
 
 # Disclaimer
