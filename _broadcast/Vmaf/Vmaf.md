@@ -14,7 +14,7 @@ One of the tools where VMAF is available is `libvmaf`, a `c/c++` library impleme
 ffmpeg -i <main> -i <reference> -lavfi "libvmaf=model_path=/usr/local/share/model/vmaf_v0.6.1.pkl" -f null -
 ```
 
-However, VMAF requires a full frame-to-frame synchronization between samples (Reference and Distorted). This fact could be a  pain in the neck, mainly for live content analysis —where is not common to get the source and the transcoded video samples synced. The most typical reasons for this desynchronization are:
+However, VMAF requires full frame-to-frame synchronization between samples (Reference and Distorted). This fact could be a  pain in the neck, mainly for live content analysis —where is not common to get the source and the transcoded video samples synced. The most typical reasons for this desynchronization are:
 
 * Interlaced sources and Progressive outputs, *i. e.,* Sources at 29.97i fps and Outputs at 29.97p fps.
 
