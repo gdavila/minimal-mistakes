@@ -28,31 +28,31 @@ Additionally, VMAF needs that Reference and Distorted videos have the same resol
 
 The syncing could be done by using a sample of the distorted video and sliding it frame-by-frame forward and backward in order to look up the best PSNR in regar to the Reference video. Once the best PSNR is found, the amount of time slided is the offset needed to get the frames synced.
 
-```cc
-+-----------------------------------------------------------+
-|                                                           |
-|                     REFERENCE VIDEO                       |
-|                                                           |
-+-----------------------------------------------------------+
-                     ^
-                     |
-                     |PSNR computation
-                     |
-                     v
-            +-----------------+
-            |   DISTORTED     |
-<--backward--   VIDEO SAMPLE  --------forward------------->
-            |                 |
-            +-----------------+
-               sliding window
+   ```cc
+   +-----------------------------------------------------------+
+   |                                                           |
+   |                     REFERENCE VIDEO                       |
+   |                                                           |
+   +-----------------------------------------------------------+
+                        ^
+                        |
+                        |PSNR computation
+                        |
+                        v
+               +-----------------+
+               |   DISTORTED     |
+   <--backward--   VIDEO SAMPLE  --------forward------------->
+               |                 |
+               +-----------------+
+                  sliding window
 
-                ---max-\
-          -----/      --\
-   ------/               --\    PSNR             /\-\
----/                         ------------/\-----/    \-----
+                  ---max-\
+            -----/      --\
+      ------/               --\    PSNR             /\-\
+   ---/                         ------------/\-----/    \-----
 
-<-------offset----->
-```
+   <-------offset----->
+   ```
 
 The sliding windows and the PSNR computation could be done through `trim` and `psnr` (filters of `ffmpeg`), example:
 
@@ -100,3 +100,4 @@ Resolution adaptation could be done by `scale` filter by using `bicubic` algorit
 
 ```bash
 ffmpeg -i <main@720p> -i <reference@1080p> -lavfi "[0:v]scale=1920:1080:flags=bicubic[main];[main][1:v]libvmaf=model_path=/usr/local/share/model/vmaf_v0.6.1.pkl" -f null -
+```

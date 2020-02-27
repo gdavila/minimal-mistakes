@@ -6,6 +6,6 @@ author_profile: false
 ---
 
 {% assign sorted = (site.broadcast | sort: 'date') | reverse %}
-{% for post in sorted%}
+{% for post in sorted %}
   {% include archive-single.html %}
 {% endfor %}
