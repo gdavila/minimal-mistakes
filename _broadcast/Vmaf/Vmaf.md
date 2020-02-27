@@ -4,7 +4,7 @@ excerpt: Simplifying the way to use vmaf
 ---
 
 
-[VMAF](https://github.com/Netflix/vmaf) has became one of the [most used tools](https://netflixtechblog.com/vmaf-the-journey-continues-44b51ee9ed12) for video quality assessment (VQA). In practise, VMAF analysis requires two inputs: (i) a  sample of the Source (Reference Video) and (ii) a sample of the transcoded video, tipically captured at the output of the encoder (Distorted Video).
+[VMAF](https://github.com/Netflix/vmaf) has become one of the [most used tools](https://netflixtechblog.com/vmaf-the-journey-continues-44b51ee9ed12) for video quality assessment (VQA). In practise, VMAF analysis requires two inputs: (i) a  sample of the Source (Reference Video) and (ii) a sample of the transcoded video, tipically captured at the output of the encoder (Distorted Video).
 
 One of the tools where VMAF is available is `libvmaf`, a `c/c++` library implemented in `ffmpeg`  that doesn't require uncompressing the video samples.
 
