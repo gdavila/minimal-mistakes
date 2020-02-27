@@ -6,13 +6,13 @@
 # `jekyll serve`. If you change this file, please restart the server process.
 
 minimal_mistakes_skin    : "default" # "air", "contrast", "dark", "dirt", "mint", "sunrise"
-remote_theme             : "mmistakes/minimal-mistakes"
+remote_theme             : "mmistakes/minimal-mistakes@4.18.1"
 # Site Settings
 locale                   : "en"
-title                    : "Networking and Data Communications"
+title                    : "Video engineering and Data Communications"
 title_separator          : "-"
-name                     : "Networking and Data Communications"
-description              : "A profesional blog to share some thoughts about networking and Data Communications issues."
+name                     : "Video engineering and Data Communications"
+description              : "A profesional blog to share some thoughts about video engineering and Data Communications issues."
 url                      : "https://gdavila.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : ""# the subpath of your site, e.g. "/blog"
 repository               : "gdavila/gdavila.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
