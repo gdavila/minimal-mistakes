@@ -28,7 +28,7 @@ Additionally, VMAF needs that Reference and Distorted videos have the same resol
 
 The syncing could be done by using a sample of the distorted video and sliding it frame-by-frame forward and backward in order to look up the best PSNR in regar to the Reference video. Once the best PSNR is found, the amount of time slided is the offset needed to get the frames synced.
 
-   ```bash
+   ```
    +-----------------------------------------------------------+
    |                                                           |
    |                     REFERENCE VIDEO                       |
