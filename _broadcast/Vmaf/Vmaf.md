@@ -26,7 +26,7 @@ Additionally, VMAF needs that Reference and Distorted videos have the same resol
 
 ## Syncing Reference and Distorted video samples
 
-The syncing could be done by using a sample of the distorted video and sliding it frame-by-frame forward and backward in order to look up the best PSNR in regar to the Reference video. Once the best PSNR is found, the amount of time slided is the offset needed to get the frames synced.
+The syncing could be done by using a sample of the distorted video and sliding it frame-by-frame forward and backward in order to look up the best PSNR in regard to the Reference video. Once the best PSNR is found, the amount of time slided is the offset needed to get the frames synced.
 
    ```
    +-----------------------------------------------------------+
@@ -60,13 +60,13 @@ The sliding windows and the PSNR computation could be done through `trim` and `p
 ffmpeg  -i <source> -i <distorted> -lavfi "[1:v]trim=start=<OFFSET>:duration=<WINDOW_SIZE>,setpts=PTS-STARTPTS[distorted];[0:v][distorted]psnr=stats_file=psnr.log" -f null -
 ```
 
-The previous cmd should be run by incrementing the `<OFFSET>` in steps of 1/fps in order to slide frame-by-frame the distorted video  trimmed at `<WINDOW_SIZE>` duration. The `<OFFSET>` `T` that produces the max PSNR will be used to compute VMAF. For example:
+The previous command should be run by incrementing the `<OFFSET>` in steps of 1/fps in order to slide frame-by-frame the distorted video. Additionally, distored video is  trimmed at a sample of `<WINDOW_SIZE>` duration in order to simplify the PSNR computation. The `<OFFSET>` `T` that produces the max PSNR will be used to compute VMAF, i.e., :
 
 ```bash
 ffmpeg -i <main> -i <reference> -lavfi "[1:v]trim=start=<T>,setpts=PTS-STARTPTS[ref];[0:v][ref]libvmaf=model_path=/usr/local/share/model/vmaf_v0.6.1.pkl" -f null -
 ```
 
-On the previous cmd, the reference is trimmed and would start at `<T>` seconds in order to get frame-to-frame synchronization. This means that the frame at `<T>` seconds  of the Reference sample matches with the first frame of the Distorted sample.
+The above example considers that by computing the PSNR through a sliding window in the main video, the best value was finding at `T` seconds from the start of the reference video. In this way, in order to get VMAF properly synced, the computation  should start with the Frame located at `<T>` seconds within the reference video (this is done by trim filter). This means that the frame at `<T>` seconds  of the Reference sample matches with the first frame of the Distorted sample.
 
 ## Interalaced Sources
 
