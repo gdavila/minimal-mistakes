@@ -12,10 +12,10 @@ Esta web documenta algunos *drafts* de mi experiencia profesial y proyectos que 
 
 Los temas de interés principales de este sitio son:
 
+
+* Media y Video Broadcast: Medición de QoS/QoE en servicios de video `IPTV` y `ABR`.
+
 *  Internet: `Topología del Internet` y `Mediciones domiciliarias de QoS`. Estos temas son un resumen de varias ideas que surgen de mi colaboración grupo de Redes Complejas y Comunicación de Datos [CoNexDat](http://cnet.fi.uba.ar/) de la UBA.
-
-* Media y Video Broadcast: (i) Medición de QoS/QoE en `Docsis 3.0`, `Docsis 3.1` y en servicios de video `IPTV` y `ABR`. (ii) Arquitecturas y paradigmas de broadcast, como *Low Latency ABR* y *content aware encoding*. 
-
 
 # Disclaimer
 
