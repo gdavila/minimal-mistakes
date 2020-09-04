@@ -4,7 +4,9 @@ excerpt: CER, Partial Service y Throughput TCP en Docsis 3.0f
 ---
 
 
-Cuando se habla de Throughput TCP en `Docsis` se sabe que está en función del CER y del CCER ademas de las variables de la session TCP. Adicionalmente, en `Docsis 3.0` aparece otra variable en juego mediante lo que se conoce como *Partial Service*. En este post se discute brevemente como interactuan todas estas variables en el Throughput final.
+El Throughput TCP básicamente depende del *round trip time* de la red, del tamaño de la ventana de transmición de datos MSS (asociado a su vez al MTU) y finalmente al *packet loss* de la capa IP. En el caso particular de Docsis, el *packet loss* IP puede entenderse como una variable en función del CER/CCER.
+
+Adicionalmente, en `Docsis 3.0` aparece otra variable en juego mediante lo que se conoce como *Partial Service*. En este post se discute brevemente como interactuan todas estas variables en el Throughput final.
 
 # Throughput TCP 
 
