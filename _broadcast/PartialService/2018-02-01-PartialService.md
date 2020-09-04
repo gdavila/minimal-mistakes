@@ -4,7 +4,7 @@ excerpt: CER, Partial Service y Throughput TCP en Docsis 3.0f
 ---
 
 
-El Throughput TCP básicamente depende del *round trip time* de la red, del tamaño de la ventana de transmición de datos MSS (asociado a su vez al MTU) y finalmente al *packet loss* de la capa IP. En el caso particular de Docsis, el *packet loss* IP puede entenderse como una variable en función del CER/CCER.
+El Throughput TCP básicamente depende del *round trip time* <img src="https://render.githubusercontent.com/render/math?math=rtt">  de la red, del tamaño máximo de segmento <img src="https://render.githubusercontent.com/render/math?math=mss">  (asociado a su vez al MTU) y finalmente al *packet loss* <img src="https://render.githubusercontent.com/render/math?math=p">  de la capa IP. En el caso particular de Docsis, el *packet loss* IP puede entenderse como una variable en función del CER/CCER.
 
 Adicionalmente, en `Docsis 3.0` aparece otra variable en juego mediante lo que se conoce como *Partial Service*. En este post se discute brevemente como interactuan todas estas variables en el Throughput final.
 
@@ -18,11 +18,11 @@ Donde el valor de  <img src="https://render.githubusercontent.com/render/math?ma
 
 <img src="https://render.githubusercontent.com/render/math?math=p \approx cer*\dfrac{ip_{size}}{codeword{size}} *\dfrac{1}{n_{ch}} \approx \dfrac {7 * cer}{n_{ch}}">
 
-Por ejemplo, el siguiente experimento muestra el Throughput TCP obtenido para distintos valores de CER y distintas configuraciones de *channel bonding*
+Por ejemplo, el siguiente experimento muestra el Throughput TCP obtenido para distintos valores de CER y distintas configuraciones de *channel bonding*. El valor máximo de Throughput del CM es de 50 Mbps
 
 ![CER vs Throughput vs Bonding practico](/broadcast/PartialService/unnamed-chunk-1-1.png)
 
-La siguiente figura muestra una *estimación teórica* del Throughput TCP  para distintos valores de CER y distintas configuraciones de *channel bonding*. El valor máximo de Throughput del CM es de 50 Mbps
+La siguiente figura muestra una *estimación teórica* del Throughput TCP  para distintos valores de CER y distintas configuraciones de *channel bonding*. 
 
 ![CER vs Throughput vs Bonding teorico](/broadcast/PartialService/unnamed-chunk-3-1.png)
 
