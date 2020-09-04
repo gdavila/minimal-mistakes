@@ -20,7 +20,7 @@ Por ejemplo, el siguiente experimento muestra el Throughput TCP obtenido para di
 
 ![CER vs Throughput vs Bonding practico](/broadcast/PartialService/unnamed-chunk-1-1.png)
 
-La siguiente figura muestra una *estimación teórica* del Throughput TCP obtenido en laboratorio para distintos valores de CER y distintas configuraciones de *channel bonding*. El valor máximo de Throughput del CM es de 50 Mbps
+La siguiente figura muestra una *estimación teórica* del Throughput TCP  para distintos valores de CER y distintas configuraciones de *channel bonding*. El valor máximo de Throughput del CM es de 50 Mbps
 
 ![CER vs Throughput vs Bonding teorico](/broadcast/PartialService/unnamed-chunk-3-1.png)
 
