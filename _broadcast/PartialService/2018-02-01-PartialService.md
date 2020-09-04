@@ -8,11 +8,11 @@ Cuando se habla de Throughput TCP en `Docsis` se sabe que está en función del 
 
 # Throughput TCP 
 
-Teóricamente el Throughput $T$ puede aproximarse como:
+Teóricamente el Throughput <img src="https://render.githubusercontent.com/render/math?math=T"> puede aproximarse como:
 
 <img src="https://render.githubusercontent.com/render/math?math=T_{tcp}= \dfrac{mss}{rtt}*\dfrac{1}{\sqrt{p}}">
 
-Donde el valor de $p$ (paket loss) está en función del  número de portadoras o canales $n_{ch}$ en *bonding*, de modo que:
+Donde el valor de  <img src="https://render.githubusercontent.com/render/math?math=p">  (paket loss) está en función del  número de portadoras o canales  <img src="https://render.githubusercontent.com/render/math?math=n_{ch}">  en *bonding*, de modo que:
 
 <img src="https://render.githubusercontent.com/render/math?math=p \approx cer*\dfrac{ip_{size}}{codeword{size}} *\dfrac{1}{n_{ch}} \approx \dfrac {7 * cer}{n_{ch}}">
 
