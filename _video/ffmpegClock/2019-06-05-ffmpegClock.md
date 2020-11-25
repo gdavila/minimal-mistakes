@@ -62,9 +62,9 @@ ffplay -i  udp://239.123.123.1:50000 -fflags nobuffer
 # Resultados
 - El resultado del video con el wallclock debería ser:
 
-![ejemplo ffplay](/broadcast/ffmpegClock/ffplay1.png)
+![ejemplo ffplay](/video/ffmpegClock/ffplay1.png)
 	
 
 - Se puede modificar el código anterior para añadir video dinámico en lugar de un fondo negro. Por ejemplo, usando los *sources test* incluidos en ffmpeg `-i testsrc2=640x480:rate=ntsc,format=yuv420p`, el stream luciría así:
 	
-![ejemplo ffplay](/broadcast/ffmpegClock/ffplay2.png)
+![ejemplo ffplay](/video/ffmpegClock/ffplay2.png)

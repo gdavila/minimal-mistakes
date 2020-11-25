@@ -1,0 +1,11 @@
+---
+layout: archive
+title: "software"
+permalink: /software/
+author_profile: false
+---
+
+{% assign sorted = (site.software | sort: 'date') | reverse %}
+{% for post in sorted %}
+  {% include archive-single.html %}
+{% endfor %}

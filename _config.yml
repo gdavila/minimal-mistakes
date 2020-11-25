@@ -9,10 +9,10 @@ minimal_mistakes_skin    : "default" # "air", "contrast", "dark", "dirt", "mint"
 remote_theme             : "mmistakes/minimal-mistakes@4.20.1"
 # Site Settings
 locale                   : "en"
-title                    : "Video engineering and Data Communications"
+title                    : "Gabriel Davila Revelo"
 title_separator          : "-"
-name                     : "Video engineering and Data Communications"
-description              : "A profesional blog to share some thoughts about video engineering and Data Communications issues."
+name                     : "Video, Software and Data Communications"
+description              : "A tech blog to share some thoughts about Video, Software development and Data Communications issues."
 url                      : "https://gdavila.github.io" # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : ""# the subpath of your site, e.g. "/blog"
 repository               : "gdavila/gdavila.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
@@ -79,9 +79,9 @@ analytics:
 
 # Site Author
 author:
-  name             : "Gabriel Dávila"
+  name             : 
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Just another engineering blog"
+  bio              : "Tech Architect <br/> Video and Software"
   location         : "Buenos Aires"
   email            : "gdavila.revelo@gmail.com"
   uri              :
@@ -236,12 +236,17 @@ compress_html:
     envs: development
 
 collections:
-
-  internet:
+  video:
     output: true
     permalink: /:collection/:path/
 
-  broadcast:
+  
+  software:
+    output: true
+    permalink: /:collection/:path/
+
+
+  internet:
     output: true
     permalink: /:collection/:path/
 
@@ -267,18 +272,28 @@ defaults:
       layout: single
       author_profile: true
 
+    # _video
+  - scope:
+      path: ""
+      type: video
+    values:
+      layout: single
+      author_profile: false
+
+     # _software
+  - scope:
+      path: ""
+      type: software
+    values:
+      layout: single
+      author_profile: false     
+
   # _internet
   - scope:
       path: ""
       type: internet
     values:
       layout: single
-      author_profile: true
+      author_profile: false
 
-  # broadcast
-  - scope:
-      path: ""
-      type: broadcast
-    values:
-      layout: single
-      author_profile: true
+

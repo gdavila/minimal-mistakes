@@ -4,23 +4,12 @@ title: About
 permalink: /about/
 ---
 
-# Sobre este sitio
+This is my personal tech blog!
 
-Esta web documenta algunos *drafts* de mi experiencia profesial y proyectos que han surgido como pasatiempo. La información expuesta corresponde a resultados preliminares e investigaciones iniciales sin ninguna formalidad ni rigurosidad.
+I'm a Tech Architect with experience in video streaming, cloud architectures, virtualized frameworks (kubernetes, docker) and with great interest in software development.
 
-# Temática
+Throughout my career I've had the opportunity to work on a wide range of technologies and services. Currently, I'm focused on cutting edge technologies for the video Industry and additionally I'm a passionate open source project contributor in my free time.
 
-Los temas de interés principales de este sitio son:
+Finally, I have experience in academic research on the Data Communications and Internet Topology field by collaborating (2013-2017) to [CoNexDat](https://cnet.fi.uba.ar/) Research Group at Buenos Aires University, where I got my MS in Telecommunications Engineering.
 
-
-* Media y Video Broadcast: Medición de QoS/QoE en servicios de video `IPTV` y `ABR`.
-
-*  Internet: `Topología del Internet` y `Mediciones domiciliarias de QoS`. Estos temas son un resumen de varias ideas que surgen de mi colaboración grupo de Redes Complejas y Comunicación de Datos [CoNexDat](http://cnet.fi.uba.ar/) de la UBA.
-
-# Disclaimer
-
-Las opiniones expresadas en el presente sitio web son personales y no representan las opiniones de las instituciones donde colaboro o trabajo.
-
-# Copyright
-
-Todos el contenido de este sitio está bajo licencia [MIT](https://choosealicense.com/licenses/mit/)
+In this way and I feel comfortable with new technical challenges that requires out of the box thinking, strong  data analysis tools (R, SQL, mongoDB) and solid knowledge of  programming languages (C++, Python, javascript).

@@ -1,0 +1,11 @@
+---
+layout: archive
+title: "Video & Media"
+permalink: /video/
+author_profile: false
+---
+
+{% assign sorted = (site.video | sort: 'date') | reverse %}
+{% for post in sorted %}
+  {% include archive-single.html %}
+{% endfor %}

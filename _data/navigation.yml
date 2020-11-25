@@ -1,8 +1,10 @@
 # main links
 main:
-  - title: "Internet Measurements"
+  - title: "Software"
+    url: /software/
+  - title: "Video & Media"
+    url: /video/
+  - title: "Data Communications"
     url: /internet/
-  - title: "Video & Broadcast"
-    url: /broadcast/
   - title: "About"
     url: /about/
