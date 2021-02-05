@@ -35,7 +35,7 @@ La mayor parte de este contenido fue originalmente expuesto por [Gyan](https://s
 ```
 ffmpeg -re -f lavfi -i color=black:640x480:rate=ntsc,format=yuv420p -g 6 -r ntsc \
 -vf "settb=AVTB,setpts='trunc(PTS/1K)*1K+st(1,trunc(RTCTIME/1K))-1K*trunc(ld(1)/1K)'\
-,drawbox=y=ih/PHI:color=black@0.4:width=iw:height=48:t=fill,\
+,drawbox=y=ih/PHI:color=black@0.4:width=iw:height=48:t=max,\
 drawtext=text='%{localtime}.%{eif\:1M*t-1K*trunc(t*1K)\:d}:fontfile='/usr/share/fonts/truetype/ \
 dejavu/DejaVuSans.ttf':fontsize=40:fontcolor=white:x=(w-tw)/2:y=240'" \
 -b:v 5M -minrate:v 5M -maxrate:v 5M -bufsize:v 1M -preset ultrafast \
